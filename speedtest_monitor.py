@@ -4,9 +4,13 @@ import sys
 import json
 import requests
 
+TOKEN = "xxxxxxxx" # Assign your Ubidots Token
+DEVICE = "xxxxxxxx" # Assign the device label to obtain the variable
+VARIABLE = "xxxxxxxx" # Assign the variable label to obtain the variable value
+DELAY = 1  # Delay in seconds
+
 def ubi_upload():
     data = json.load(sys.stdin)
-    # apiKey = os.environ["ubidotsApi"]
 
     type = data['type']
 
@@ -31,7 +35,14 @@ def upload_to_ubi(data):
             'bytes_used': round((data["download"]["bytes"] + data["upload"]["bytes"] ) / (1024*1024), 2),
         }
 
-        r = requests.post('http://industrial.api.ubidots.com/api/v1.6/devices/raspberry-pi/?token='os.environ["ubiapi"]'', data=payload)
+        url = "http://industrial.api.ubidots.com/"
+        url = url + \
+            "api/v1.6/devices/{0}/{1}/".format(device, variable)
+        headers = {"X-Auth-Token": TOKEN, "Content-Type": "application/json"}
+
+
+        r = requests.post(url=url, headers=headers, data=payload)
+        # r = requests.post('https://industrial.api.ubidots.com/api/v1.6/devices/raspberry-pi/?token=MY_API_KEY', data=payload)
         r.raise_for_status()
 
         # Print the server's response Uncomment the next line for debugging purposes
